@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "423699553524",
+    "project_id": "test-work-chat",
+    "storage_bucket": "test-work-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423699553524:android:194acadd2f66f926ab92a1",
+        "android_client_info": {
+          "package_name": "com.example.chat_test_work"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "423699553524-9djlsa46cr51e8uf7439b504ce651vp9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsjJAln6h4RedJ-uv6Lid7dPBn3cH-ILU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "423699553524-9djlsa46cr51e8uf7439b504ce651vp9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "423699553524-8iu6vqc7sgort563a5kfdldu6km00n9t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatTestWork"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
