@@ -38,77 +38,74 @@ class MessageOut extends StatelessWidget {
                   bottomRight: Radius.circular(6 * fem),
                 ),
               ),
-              child: Flexible(
-                child: SizedBox(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        child: SizedBox(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Flexible(
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 8 * fem),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Flexible(
-                                        child: Container(
-                                          constraints: const BoxConstraints(
-                                              maxWidth: 220),
-                                          margin:
-                                              EdgeInsets.only(bottom: 10 * fem),
+              child: SizedBox(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: SizedBox(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Flexible(
+                              child: Container(
+                                margin: EdgeInsets.only(right: 8 * fem),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        constraints:
+                                            const BoxConstraints(maxWidth: 220),
+                                        margin:
+                                            EdgeInsets.only(bottom: 10 * fem),
 
-                                          // -------------message ChattUser----------------------------------
+                                        // -------------message ChattUser----------------------------------
 
-                                          child: Text(
-                                            message.content,
-                                            style: SafeGoogleFont(
-                                              'Eloquia Text',
-                                              fontSize: 14 * ffem,
-                                              fontWeight: FontWeight.w400,
-                                              color: const Color(0xffffffff),
-                                            ),
-                                            maxLines: 20,
-                                            overflow: TextOverflow.clip,
+                                        child: Text(
+                                          message.content,
+                                          style: SafeGoogleFont(
+                                            'Eloquia Text',
+                                            fontSize: 14 * ffem,
+                                            fontWeight: FontWeight.w400,
+                                            color: const Color(0xffffffff),
                                           ),
+                                          maxLines: 20,
+                                          overflow: TextOverflow.clip,
                                         ),
                                       ),
-                                      Flexible(
-                                        child: Container(
-                                          height: 1 * h,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xfff2f2f7),
-                                          ),
+                                    ),
+                                    Flexible(
+                                      child: Container(
+                                        height: 1 * h,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xfff2f2f7),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                DateFormat('HH:mm a').format(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.parse(message.timestamp))),
-                                style: SafeGoogleFont(
-                                  'Eloquia Text',
-                                  fontSize: 12 * ffem,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xffffffff),
-                                ),
+                            ),
+                            Text(
+                              DateFormat('HH:mm a').format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      int.parse(message.timestamp))),
+                              style: SafeGoogleFont(
+                                'Eloquia Text',
+                                fontSize: 12 * ffem,
+                                fontWeight: FontWeight.w400,
+                                color: const Color(0xffffffff),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -109,37 +109,90 @@ class MessageIn extends StatelessWidget {
                                   bottomRight: Radius.circular(6 * fem),
                                 ),
                               ),
-                              child: Flexible(
-                                child: SizedBox(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
+                              child: SizedBox(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                            right: 10 * ffem,
+                                          ),
+                                          child: Text(
+                                            chatUser?.name ?? 'Unnamed',
+                                            style: SafeGoogleFont(
+                                              'Eloquia Text',
+                                              fontSize: 14 * ffem,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xff2c2c2e),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          chatUser?.profession ?? 'Unnamed',
+                                          style: SafeGoogleFont(
+                                            'Eloquia Text',
+                                            fontSize: 12 * ffem,
+                                            fontWeight: FontWeight.w400,
+                                            color: const Color(0xff666668),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                            CrossAxisAlignment.end,
                                         children: [
-                                          Flexible(
-                                            child: Container(
-                                              margin: EdgeInsets.only(
-                                                right: 10 * ffem,
-                                              ),
-                                              child: Text(
-                                                chatUser?.name ?? 'Unnamed',
-                                                style: SafeGoogleFont(
-                                                  'Eloquia Text',
-                                                  fontSize: 14 * ffem,
-                                                  fontWeight: FontWeight.w600,
-                                                  color:
-                                                      const Color(0xff2c2c2e),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.only(right: 8 * fem),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                          maxWidth: 220),
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 10 * fem),
+
+                                                  // -------------message ChattUser----------------------------------
+
+                                                  child: Text(
+                                                    message.content,
+                                                    style: SafeGoogleFont(
+                                                      'Eloquia Text',
+                                                      fontSize: 14 * ffem,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: const Color(
+                                                          0xff2c2c2e),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                Container(
+                                                  height: 1 * h,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Color(0xfff2f2f7),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                           Text(
-                                            chatUser?.profession ?? 'Unnamed',
+                                            DateFormat('HH:mm a').format(
+                                                DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                        int.parse(message
+                                                            .timestamp))),
                                             style: SafeGoogleFont(
                                               'Eloquia Text',
                                               fontSize: 12 * ffem,
@@ -149,72 +202,8 @@ class MessageIn extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      SizedBox(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Container(
-                                              margin: EdgeInsets.only(
-                                                  right: 8 * fem),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Flexible(
-                                                    child: Container(
-                                                      constraints:
-                                                          const BoxConstraints(
-                                                              maxWidth: 220),
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 10 * fem),
-
-                                                      // -------------message ChattUser----------------------------------
-
-                                                      child: Text(
-                                                        message.content,
-                                                        style: SafeGoogleFont(
-                                                          'Eloquia Text',
-                                                          fontSize: 14 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: const Color(
-                                                              0xff2c2c2e),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Container(
-                                                      height: 1 * h,
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                        color:
-                                                            Color(0xfff2f2f7),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Text(
-                                              DateFormat('HH:mm a').format(
-                                                  DateTime
-                                                      .fromMillisecondsSinceEpoch(
-                                                          int.parse(message
-                                                              .timestamp))),
-                                              style: SafeGoogleFont(
-                                                'Eloquia Text',
-                                                fontSize: 12 * ffem,
-                                                fontWeight: FontWeight.w400,
-                                                color: const Color(0xff666668),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

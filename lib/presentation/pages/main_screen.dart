@@ -19,8 +19,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   TextEditingController chatIdController = TextEditingController();
 
-// int.parse(value.replaceAll(RegExp('[^0-9]'), ''))
-
   bool chatIdConsist = false;
 
   @override
@@ -28,15 +26,13 @@ class _MainScreenState extends State<MainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final infoProvider = Provider.of<InfoProvider>(context, listen: false);
       infoProvider.getCurrentUser();
-      // infoProvider.getAllUsers();
-      // String lastSeen = DateTime.now().millisecondsSinceEpoch.toString();
-      // infoProvider.currentUser.lastSeen = lastSeen;
-      // infoProvider.updateCurrentUser(infoProvider.currentUser);
     });
     super.initState();
   }
 
   bool showAddphoto = false;
+  bool showChangeName = false;
+  bool showChangeProfession = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +104,9 @@ class _MainScreenState extends State<MainScreen> {
                           child: const AddImage())),
             ),
           ),
-
           Center(
             child: Padding(
-                padding: EdgeInsets.only(top: 16 * h), //, left: 185 * fem
+                padding: EdgeInsets.only(top: 16 * h),
                 child: Text(
                   'ID: ${infoProvider.currentUser.id.toString()}',
                   style: SafeGoogleFont(
@@ -124,37 +119,37 @@ class _MainScreenState extends State<MainScreen> {
                 )),
           ),
           Padding(
-            padding:
-                EdgeInsets.only(top: 87 * h, left: 40 * fem), //left: 47 * fem
+            padding: EdgeInsets.only(top: 87 * h, left: 40 * fem),
             child: SizedBox(
                 width: 400 * fem,
                 height: 35 * h,
                 child: Row(children: [
                   SizedBox(
-                    width: 200 * fem,
-                    height: 35 * h,
-                    child: (infoProvider.currentUser.name == '')
-                        ? const ChangeUserInfo('name')
-                        : InkWell(
-                            onTap: () => setState(
-                              () {
-                                const ChangeUserInfo('name');
-                              },
-                            ),
-                            child: Text(
-                              infoProvider.currentUser.name,
-                              textAlign: TextAlign.right,
-                              style: SafeGoogleFont(
-                                'Inter',
-                                decoration: TextDecoration.underline,
-                                fontSize: 30 * ffem,
-                                fontWeight: FontWeight.w400,
-                                height: 1.2125 * ffem / fem,
-                                color: const Color(0xff000000),
-                              ),
-                            ),
-                          ),
-                  ),
+                      width: 200 * fem,
+                      height: 35 * h,
+                      child: (infoProvider.currentUser.name == '')
+                          ? const ChangeUserInfo('name')
+                          : InkWell(
+                              onTap: () => setState(
+                                    () {
+                                      showChangeName = true;
+                                      const ChangeUserInfo('name');
+                                    },
+                                  ),
+                              child: (showChangeName == false)
+                                  ? Text(
+                                      infoProvider.currentUser.name,
+                                      textAlign: TextAlign.right,
+                                      style: SafeGoogleFont(
+                                        'Inter',
+                                        decoration: TextDecoration.underline,
+                                        fontSize: 30 * ffem,
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.2125 * ffem / fem,
+                                        color: const Color(0xff000000),
+                                      ),
+                                    )
+                                  : const ChangeUserInfo('name'))),
                   SizedBox(
                     width: 200 * fem,
                     height: 35 * h,
@@ -162,26 +157,26 @@ class _MainScreenState extends State<MainScreen> {
                         ? const ChangeUserInfo('profession')
                         : InkWell(
                             onTap: () => setState(() {
-                              const ChangeUserInfo('profession');
-                            }),
-                            child: Text(
-                              ' ${infoProvider.currentUser.profession}',
-                              textAlign: TextAlign.left,
-                              style: SafeGoogleFont(
-                                'Inter',
-                                decoration: TextDecoration.underline,
-                                fontSize: 30 * ffem,
-                                fontWeight: FontWeight.w400,
-                                height: 1.2125 * ffem / fem,
-                                color: const Color(0xff000000),
-                              ),
-                            ),
-                          ),
+                                  showChangeProfession = true;
+                                  const ChangeUserInfo('profession');
+                                }),
+                            child: (showChangeProfession == false)
+                                ? Text(
+                                    ' ${infoProvider.currentUser.profession}',
+                                    textAlign: TextAlign.left,
+                                    style: SafeGoogleFont(
+                                      'Inter',
+                                      decoration: TextDecoration.underline,
+                                      fontSize: 30 * ffem,
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.2125 * ffem / fem,
+                                      color: const Color(0xff000000),
+                                    ),
+                                  )
+                                : const ChangeUserInfo('profession')),
                   ),
                 ])),
           ),
-          // ),
-          // ),
           Padding(
             padding: EdgeInsets.only(top: 38 * h, left: 84 * fem),
             child: Container(

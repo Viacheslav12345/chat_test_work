@@ -34,8 +34,4 @@ class Person {
         'profession': profession,
         'lastSeen': lastSeen,
       };
-
-  // Person.fromFirebase(User user) {
-  //   id = user.uid;
-  // }
 }

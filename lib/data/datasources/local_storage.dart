@@ -29,24 +29,8 @@ class LocalDataSource {
           urlAvatar: '',
           profession: '',
           lastSeen: '');
-      // throw CacheException();
     }
   }
-
-  // Future<void> saveImagesToPreferences(List<String> listBase64) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  //   List<String> currentImagesIn64 = await getImagesFromPreferences();
-
-  //   for (var imageIn64 in listBase64) {
-  //     if (currentImagesIn64.contains(imageIn64)) {
-  //     } else {
-  //       currentImagesIn64.add(imageIn64);
-  //     }
-  //   }
-  //   prefs.setStringList(
-  //       CACHED_ALL_USERS_AVATAR, currentImagesIn64); // adding the new image
-  // }
 
   Future<String> getImageFromPreferences(String avaLink) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

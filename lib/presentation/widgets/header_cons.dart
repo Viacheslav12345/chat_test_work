@@ -10,8 +10,9 @@ class HeaderIcons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     InfoProvider infoProvider = Provider.of<InfoProvider>(context);
-
+    // infoProvider.allUsers.remove(infoProvider.currentUser);
     final allUsers = infoProvider.allUsers;
+
     double pShift = -18;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     List<Widget> listOfIcons = [];
