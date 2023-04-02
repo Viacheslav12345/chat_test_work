@@ -1,16 +1,10 @@
-# chat_test_work
+ - Собченко Вячеслав Миколайович 
+ - viach.sob@gmail.com
+ - 50 годин
 
-A new Flutter project.
+# Тестове завдання "Чат"
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ <p float="left">
+    <img src="https://user-images.githubusercontent.com/101039162/229155608-f049eeaa-ab23-466e-8146-4b08678089c7.jpg" alt="Preview" height="500px"/>
+    <img src="https://user-images.githubusercontent.com/101039162/229155615-855b64c8-dd3a-451c-a560-2c2ffaab61cd.jpg" alt="Preview" height="500px"/>
+</p>
