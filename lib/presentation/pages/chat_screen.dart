@@ -21,19 +21,19 @@ class ChatScreen extends StatelessWidget {
     Repository repository = Repository();
 
     final currentUser = infoProvider.currentUser;
-    final allUsers = infoProvider.allUsers;
+    final currentChatUsers = infoProvider.currentChatUsers;
+    currentChatUsers
+        .removeWhere((user) => user.id == infoProvider.currentUser.id);
     final chatId = infoProvider.chatId;
     int seenMinutesAgo = 0;
 
-    if (allUsers.isNotEmpty) {
+    if (currentChatUsers.isNotEmpty) {
       final lastSeenUsersTime =
-          (allUsers.map((user) => int.parse(user.lastSeen)).toList()).max;
+          (currentChatUsers.map((user) => int.parse(user.lastSeen)).toList())
+              .max;
       Duration duration = DateTime.now()
           .difference(DateTime.fromMillisecondsSinceEpoch(lastSeenUsersTime));
-      seenMinutesAgo =
-          (duration.inMinutes < 60) ? duration.inMinutes : duration.inHours;
-
-      duration.inMinutes;
+      seenMinutesAgo = duration.inMinutes;
     }
 
     double h = MediaQuery.of(context).size.height / baseHeight;
@@ -74,7 +74,9 @@ class ChatScreen extends StatelessWidget {
                     margin: EdgeInsets.only(top: 28 * h),
                     height: 18 * fem,
                     child: Text(
-                      'last seen $seenMinutesAgo minutes ago',
+                      (seenMinutesAgo < 60)
+                          ? 'last seen $seenMinutesAgo minutes ago'
+                          : 'last seen ${(seenMinutesAgo / 60).roundToDouble().toInt()} hours ago',
                       style: SafeGoogleFont(
                         'Eloquia Text',
                         fontSize: 12 * ffem,
