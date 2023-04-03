@@ -60,11 +60,12 @@ class RemoteDataSource {
   }
 
   void sendMessage(Message message) {
-    _refMesseges.push().set(message.toJson());
+    final chatId = message.idTo;
+    _refMesseges.child(chatId.toString()).push().set(message.toJson());
   }
 
-  Query getMessageQuery() {
-    return _refMesseges;
+  Query getMessageQuery(int chatId) {
+    return _refMesseges.child(chatId.toString());
   }
 
   Future<void> getImagesEncodeToBase64AndSaveToLocal(

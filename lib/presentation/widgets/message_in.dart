@@ -19,10 +19,10 @@ class MessageIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Person? chatUser;
-
-    chatUser = Provider.of<InfoProvider>(context)
-        .allUsers
-        .firstWhereOrNull((user) => user.id == message.idFrom);
+    InfoProvider infoProvider = Provider.of<InfoProvider>(context);
+    int chatId = infoProvider.chatId;
+    chatUser = infoProvider.allUsers.firstWhereOrNull(
+        (user) => user.id == message.idFrom && chatId == message.idTo);
 
     if (chatUser == null) {
       Provider.of<InfoProvider>(context).getAllUsers();

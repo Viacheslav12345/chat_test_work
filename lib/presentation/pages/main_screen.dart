@@ -6,6 +6,7 @@ import 'package:chat_test_work/presentation/widgets/change_user_info.dart';
 import 'package:chat_test_work/presentation/route_transition.dart';
 import 'package:chat_test_work/common/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,7 @@ class _MainScreenState extends State<MainScreen> {
   TextEditingController chatIdController = TextEditingController();
 
   bool chatIdConsist = false;
+  late String chatIdValue;
 
   @override
   void initState() {
@@ -28,6 +30,20 @@ class _MainScreenState extends State<MainScreen> {
       infoProvider.getCurrentUser();
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    chatIdController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    final infoProvider = Provider.of<InfoProvider>(context, listen: false);
+    String lastSeen = DateTime.now().millisecondsSinceEpoch.toString();
+    infoProvider.currentUser.lastSeen = lastSeen;
+    super.didChangeDependencies();
   }
 
   bool showAddphoto = false;
@@ -197,6 +213,10 @@ class _MainScreenState extends State<MainScreen> {
                         width: 123 * fem,
                         height: 24 * h,
                         child: TextField(
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Enter chat id',
@@ -208,12 +228,18 @@ class _MainScreenState extends State<MainScreen> {
                               color: const Color(0xff000000),
                             ),
                           ),
+                          onChanged: (value) => chatIdValue = value,
                           onSubmitted: (value) {
                             if (value.isNotEmpty) {
                               chatIdConsist = true;
                               infoProvider.setCurrentChatId(int.parse(value));
-                              infoProvider.getAllUsers();
-                              goToChat();
+                              infoProvider
+                                  .updateCurrentUser(infoProvider.currentUser);
+                              infoProvider
+                                  .getAllUsers()
+                                  .whenComplete(
+                                      () => infoProvider.getCurrentChatUsers())
+                                  .whenComplete(() => goToChat());
                             }
                           },
                         )),
@@ -221,7 +247,15 @@ class _MainScreenState extends State<MainScreen> {
                       padding: const EdgeInsets.only(right: 19.0),
                       child: GestureDetector(
                         onTap: () {
-                          goToChat();
+                          chatIdConsist = true;
+                          infoProvider.setCurrentChatId(int.parse(chatIdValue));
+                          infoProvider
+                              .updateCurrentUser(infoProvider.currentUser);
+                          infoProvider
+                              .getAllUsers()
+                              .whenComplete(
+                                  () => infoProvider.getCurrentChatUsers())
+                              .whenComplete(() => goToChat());
                         },
                         child: Image.asset(
                           'assets/components/images/paper-airplane.png',

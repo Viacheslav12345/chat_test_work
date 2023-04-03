@@ -1,6 +1,7 @@
 import 'package:chat_test_work/data/datasources/local_storage.dart';
 import 'package:chat_test_work/data/datasources/remote_storage.dart';
 import 'package:chat_test_work/domain/entities/person.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Repository {
   LocalDataSource localDataSource = LocalDataSource();
@@ -22,6 +23,10 @@ class Repository {
   void updateCurrentUser(Person user) {
     localDataSource.currentUserToCache(user);
     remoteDataSource.updateUser(user);
+  }
+
+  Query getMessagesQuery(int chatId) {
+    return remoteDataSource.getMessageQuery(chatId);
   }
 
   Future<void> saveAvatarImages(List<String> allUsersAvatars) async {

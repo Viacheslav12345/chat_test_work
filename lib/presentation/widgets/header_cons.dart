@@ -10,14 +10,14 @@ class HeaderIcons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     InfoProvider infoProvider = Provider.of<InfoProvider>(context);
-    // infoProvider.allUsers.remove(infoProvider.currentUser);
-    final allUsers = infoProvider.allUsers;
+    final chatUsers = infoProvider.currentChatUsers;
+    chatUsers.removeWhere((user) => user.id == infoProvider.currentUser.id);
 
     double pShift = -18;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     List<Widget> listOfIcons = [];
 
-    for (var i = 0; i < allUsers.length; i++) {
+    for (var i = 0; i < chatUsers.length; i++) {
       pShift = pShift + 20 * fem;
 
       listOfIcons.add(Positioned(
@@ -37,10 +37,10 @@ class HeaderIcons extends StatelessWidget {
               height: 24 * fem,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(150 * fem),
-                child: (allUsers[i].avatar == '')
+                child: (chatUsers[i].avatar == '')
                     ? Image.asset('assets/components/images/unknown-user.png')
                     : Image.network(
-                        allUsers[i].urlAvatar,
+                        chatUsers[i].urlAvatar,
                         fit: BoxFit.cover,
                       ),
               ),

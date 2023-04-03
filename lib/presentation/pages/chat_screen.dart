@@ -1,5 +1,5 @@
 import 'package:chat_test_work/common/const.dart';
-import 'package:chat_test_work/data/datasources/remote_storage.dart';
+import 'package:chat_test_work/data/repository.dart';
 import 'package:chat_test_work/domain/entities/massage.dart';
 import 'package:chat_test_work/domain/models/info_provider.dart';
 import 'package:chat_test_work/presentation/widgets/header_cons.dart';
@@ -18,9 +18,11 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     InfoProvider infoProvider = Provider.of<InfoProvider>(context);
+    Repository repository = Repository();
 
     final currentUser = infoProvider.currentUser;
     final allUsers = infoProvider.allUsers;
+    final chatId = infoProvider.chatId;
     int seenMinutesAgo = 0;
 
     if (allUsers.isNotEmpty) {
@@ -28,7 +30,10 @@ class ChatScreen extends StatelessWidget {
           (allUsers.map((user) => int.parse(user.lastSeen)).toList()).max;
       Duration duration = DateTime.now()
           .difference(DateTime.fromMillisecondsSinceEpoch(lastSeenUsersTime));
-      seenMinutesAgo = duration.inMinutes;
+      seenMinutesAgo =
+          (duration.inMinutes < 60) ? duration.inMinutes : duration.inHours;
+
+      duration.inMinutes;
     }
 
     double h = MediaQuery.of(context).size.height / baseHeight;
@@ -90,15 +95,14 @@ class ChatScreen extends StatelessWidget {
 
             Expanded(
               child: FirebaseAnimatedList(
-                query: RemoteDataSource().getMessageQuery(),
-                itemBuilder: (context, snapshot, animation, index) {
-                  final json = snapshot.value as Map<dynamic, dynamic>;
-                  final message = Message.fromJson(json);
-                  return (message.idFrom == currentUser.id)
-                      ? MessageOut(message: message)
-                      : MessageIn(message: message);
-                },
-              ),
+                  query: repository.getMessagesQuery(chatId),
+                  itemBuilder: (context, snapshot, animation, index) {
+                    final json = snapshot.value as Map<dynamic, dynamic>;
+                    final message = Message.fromJson(json);
+                    return (message.idFrom == currentUser.id)
+                        ? MessageOut(message: message)
+                        : MessageIn(message: message);
+                  }),
             ),
 
             //------- FOOTER --------------------------------------------

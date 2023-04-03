@@ -1,15 +1,20 @@
 import 'dart:math';
 
 import 'package:chat_test_work/data/repository.dart';
+import 'package:chat_test_work/domain/entities/massage.dart';
 import 'package:chat_test_work/domain/entities/person.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 
 class InfoProvider extends ChangeNotifier {
   Repository repository = Repository();
 
   Person get currentUser => _currentUser;
+  List<Person> get currentChatUsers => _currentChatUsers;
   List<Person> get allUsers => _allUsers;
   Map<String, String> get imagesInBase64 => _imagesInBase64;
+  int get chatId => _chatId;
+
   static Person _currentUser = Person(
     id: 0,
     name: '',
@@ -18,6 +23,7 @@ class InfoProvider extends ChangeNotifier {
     profession: '',
     lastSeen: '',
   );
+  List<Person> _currentChatUsers = [];
   List<Person> _allUsers = [];
   final Map<String, String> _imagesInBase64 = {};
   late int _chatId;
@@ -61,6 +67,26 @@ class InfoProvider extends ChangeNotifier {
   void updateCurrentUser(Person currentUser) {
     _currentUser = currentUser;
     repository.updateCurrentUser(_currentUser);
+  }
+
+  void getCurrentChatUsers() async {
+    var currentChatQuery = repository.getMessagesQuery(chatId);
+    DataSnapshot dataSnapshot = await currentChatQuery.get();
+
+    if (dataSnapshot.exists) {
+      final currentChatMessages = (dataSnapshot.value as Map<dynamic, dynamic>)
+          .values
+          .map((json) => Message.fromJson(json))
+          .toList()
+          .where((message) => message.idTo == chatId)
+          .toList();
+      final currentChatUsersId =
+          currentChatMessages.map((message) => message.idFrom).toList();
+      _currentChatUsers = allUsers
+          .where((user) => currentChatUsersId.contains(user.id))
+          .toSet()
+          .toList();
+    }
   }
 
   void setCurrentChatId(int chatId) {
