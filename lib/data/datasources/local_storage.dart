@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:chat_test_work/domain/entities/person.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_CURRENT_USER = 'CACHED_CURRENT_USER';
@@ -29,6 +30,15 @@ class LocalDataSource {
           urlAvatar: '',
           profession: '',
           lastSeen: '');
+    }
+  }
+
+  Future<void> saveImageToCache(String avatarName, Uint8List? data) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (data != null &&
+        !prefs.containsKey(CACHED_ALL_USERS_AVATAR + avatarName)) {
+      String base64String = base64Encode(data);
+      prefs.setString(CACHED_ALL_USERS_AVATAR + avatarName, base64String);
     }
   }
 

@@ -29,7 +29,7 @@ class MessageOut extends StatelessWidget {
           Stack(alignment: AlignmentDirectional.topEnd, children: [
             Container(
               margin: EdgeInsets.only(left: 8 * fem, right: 8.5),
-              padding: EdgeInsets.fromLTRB(7 * fem, 5 * fem, 6 * fem, 6 * fem),
+              padding: EdgeInsets.fromLTRB(7 * fem, 5 * fem, 6 * fem, 3 * fem),
               decoration: BoxDecoration(
                 color: const Color(0xff007aff),
                 borderRadius: BorderRadius.only(
@@ -49,45 +49,38 @@ class MessageOut extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Flexible(
-                              child: Container(
-                                margin: EdgeInsets.only(right: 8 * fem),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Flexible(
-                                      child: Container(
-                                        constraints:
-                                            const BoxConstraints(maxWidth: 220),
-                                        margin:
-                                            EdgeInsets.only(bottom: 10 * fem),
+                            Container(
+                              margin: EdgeInsets.only(right: 8 * fem),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 220),
+                                    margin: EdgeInsets.only(bottom: 10 * fem),
 
-                                        // -------------message ChattUser----------------------------------
+                                    // -------------message ChattUser----------------------------------
 
-                                        child: Text(
-                                          message.content,
-                                          style: SafeGoogleFont(
-                                            'Eloquia Text',
-                                            fontSize: 14 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            color: const Color(0xffffffff),
-                                          ),
-                                          maxLines: 20,
-                                          overflow: TextOverflow.clip,
-                                        ),
+                                    child: Text(
+                                      message.content,
+                                      style: SafeGoogleFont(
+                                        'Eloquia Text',
+                                        fontSize: 14 * ffem,
+                                        fontWeight: FontWeight.w400,
+                                        color: const Color(0xffffffff),
                                       ),
+                                      maxLines: 20,
+                                      overflow: TextOverflow.clip,
                                     ),
-                                    Flexible(
-                                      child: Container(
-                                        height: 1 * h,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xfff2f2f7),
-                                        ),
-                                      ),
+                                  ),
+                                  Container(
+                                    height: 1 * h,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xfff2f2f7),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                             Text(
@@ -112,11 +105,11 @@ class MessageOut extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(right: 2),
               width: 14.5 * fem,
-              height: 39 * fem,
+              height: 34 * fem,
               child: Image.asset(
                 'assets/components/images/bubble-left-3sj.png',
                 width: 14.5 * fem,
-                height: 39 * fem,
+                height: 34 * fem,
               ),
             ),
           ]),

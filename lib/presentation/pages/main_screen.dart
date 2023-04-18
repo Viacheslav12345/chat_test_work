@@ -21,13 +21,14 @@ class _MainScreenState extends State<MainScreen> {
   TextEditingController chatIdController = TextEditingController();
 
   bool chatIdConsist = false;
-  late String chatIdValue;
+  String chatIdValue = '';
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final infoProvider = Provider.of<InfoProvider>(context, listen: false);
-      infoProvider.getCurrentUser();
+      await infoProvider.getCurrentUser();
+      setState(() {});
     });
     super.initState();
   }
@@ -46,7 +47,6 @@ class _MainScreenState extends State<MainScreen> {
     super.didChangeDependencies();
   }
 
-  bool showAddphoto = false;
   bool showChangeName = false;
   bool showChangeProfession = false;
 
@@ -82,49 +82,12 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 137 * h, left: 137 * fem),
-            child: SizedBox(
-              width: 216 * fem,
-              height: 213 * h,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(35 * fem),
-                  child: (showAddphoto == false &&
-                          infoProvider.currentUser.avatar == '')
-                      ? InkWell(
-                          onTap: () {
-                            Fluttertoast.showToast(
-                              msg:
-                                  "Click on avatar once again to set photo from gallery.",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.CENTER,
-                              timeInSecForIosWeb: 2,
-                              backgroundColor: Colors.grey,
-                              textColor: Colors.white,
-                              fontSize: 18.0,
-                            );
-                            setState(() {
-                              showAddphoto = true;
-                            });
-                          },
-                          child: Image.asset(
-                            'assets/components/images/unknown-user.png',
-                            fit: BoxFit.cover,
-                          ))
-                      : InkWell(
-                          onTap: () {
-                            setState(() {
-                              showAddphoto = true;
-                            });
-                          },
-                          child: const AddImage())),
-            ),
-          ),
+          const AvatarWidget(),
           Center(
             child: Padding(
                 padding: EdgeInsets.only(top: 16 * h),
                 child: Text(
-                  'ID: ${infoProvider.currentUser.id.toString()}',
+                  'ID: ${context.select((InfoProvider value) => value.currentUser.id).toString()}',
                   style: SafeGoogleFont(
                     'Inter',
                     fontSize: 30 * ffem,
@@ -144,14 +107,16 @@ class _MainScreenState extends State<MainScreen> {
                       width: 200 * fem,
                       height: 35 * h,
                       child: (infoProvider.currentUser.name == '')
-                          ? const ChangeUserInfo('name')
+                          ? ChangeUserInfo(
+                              'name', infoProvider.currentUser.name)
                           : InkWell(
                               onTap: () => setState(
-                                    () {
-                                      showChangeName = true;
-                                      const ChangeUserInfo('name');
-                                    },
-                                  ),
+                                () {
+                                  showChangeName = true;
+                                  ChangeUserInfo(
+                                      'name', infoProvider.currentUser.name);
+                                },
+                              ),
                               child: (showChangeName == false)
                                   ? Text(
                                       infoProvider.currentUser.name,
@@ -165,16 +130,20 @@ class _MainScreenState extends State<MainScreen> {
                                         color: const Color(0xff000000),
                                       ),
                                     )
-                                  : const ChangeUserInfo('name'))),
+                                  : ChangeUserInfo(
+                                      'name', infoProvider.currentUser.name),
+                            )),
                   SizedBox(
                     width: 200 * fem,
                     height: 35 * h,
                     child: (infoProvider.currentUser.profession == '')
-                        ? const ChangeUserInfo('profession')
+                        ? ChangeUserInfo(
+                            'profession', infoProvider.currentUser.profession)
                         : InkWell(
                             onTap: () => setState(() {
                                   showChangeProfession = true;
-                                  const ChangeUserInfo('profession');
+                                  ChangeUserInfo('profession',
+                                      infoProvider.currentUser.profession);
                                 }),
                             child: (showChangeProfession == false)
                                 ? Text(
@@ -189,7 +158,8 @@ class _MainScreenState extends State<MainScreen> {
                                       color: const Color(0xff000000),
                                     ),
                                   )
-                                : const ChangeUserInfo('profession')),
+                                : ChangeUserInfo('profession',
+                                    infoProvider.currentUser.profession)),
                   ),
                 ])),
           ),
@@ -229,33 +199,24 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           onChanged: (value) => chatIdValue = value,
-                          onSubmitted: (value) {
+                          onSubmitted: (value) async {
                             if (value.isNotEmpty) {
                               chatIdConsist = true;
-                              infoProvider.setCurrentChatId(int.parse(value));
-                              infoProvider
-                                  .updateCurrentUser(infoProvider.currentUser);
-                              infoProvider
-                                  .getAllUsers()
-                                  .whenComplete(
-                                      () => infoProvider.getCurrentChatUsers())
-                                  .whenComplete(() => goToChat());
+                              await infoProvider.setIdAndloadInfoForChat(value);
+                              goToChat();
                             }
                           },
                         )),
                     Padding(
                       padding: const EdgeInsets.only(right: 19.0),
                       child: GestureDetector(
-                        onTap: () {
-                          chatIdConsist = true;
-                          infoProvider.setCurrentChatId(int.parse(chatIdValue));
-                          infoProvider
-                              .updateCurrentUser(infoProvider.currentUser);
-                          infoProvider
-                              .getAllUsers()
-                              .whenComplete(
-                                  () => infoProvider.getCurrentChatUsers())
-                              .whenComplete(() => goToChat());
+                        onTap: () async {
+                          if (chatIdValue.isNotEmpty) {
+                            chatIdConsist = true;
+                            await infoProvider
+                                .setIdAndloadInfoForChat(chatIdValue);
+                            goToChat();
+                          }
                         },
                         child: Image.asset(
                           'assets/components/images/paper-airplane.png',
@@ -280,5 +241,65 @@ class _MainScreenState extends State<MainScreen> {
       Navigator.of(context).push(
           RouteTransition(page: const ChatScreen(), routeName: '/chatScreen'));
     }
+  }
+}
+
+class AvatarWidget extends StatefulWidget {
+  const AvatarWidget({Key? key}) : super(key: key);
+
+  @override
+  State<AvatarWidget> createState() => _AvatarWidgetState();
+}
+
+class _AvatarWidgetState extends State<AvatarWidget> {
+  bool showAddphoto = false;
+
+  @override
+  Widget build(BuildContext context) {
+    double h = MediaQuery.of(context).size.height / baseHeight;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+    final currentUserAva =
+        context.select((InfoProvider value) => value.currentUser.avatar);
+
+    return Padding(
+      padding: EdgeInsets.only(top: 137 * h, left: 137 * fem),
+      child: SizedBox(
+        width: 216 * fem,
+        height: 213 * h,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(35 * fem),
+          child: (showAddphoto == false && currentUserAva == '')
+              ? InkWell(
+                  onTap: () {
+                    Fluttertoast.showToast(
+                      msg:
+                          "Click on avatar once again to set photo from gallery.",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 2,
+                      backgroundColor: Colors.grey,
+                      textColor: Colors.white,
+                      fontSize: 18.0,
+                    );
+                    setState(() {
+                      showAddphoto = true;
+                    });
+                  },
+                  child: Image.asset(
+                    'assets/components/images/unknown-user.png',
+                    fit: BoxFit.cover,
+                  ))
+              : InkWell(
+                  onTap: () {
+                    setState(() {
+                      showAddphoto = true;
+                    });
+                  },
+                  child: const AddImage(),
+                ),
+        ),
+      ),
+    );
   }
 }

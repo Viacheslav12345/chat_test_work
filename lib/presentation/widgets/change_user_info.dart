@@ -5,14 +5,18 @@ import 'package:provider/provider.dart';
 
 class ChangeUserInfo extends StatefulWidget {
   final String label;
-  const ChangeUserInfo(this.label, {Key? key}) : super(key: key);
+  final String defaultText;
+  const ChangeUserInfo(this.label, this.defaultText, {Key? key})
+      : super(key: key);
 
   @override
   State<ChangeUserInfo> createState() => _ChangeUserInfoState();
 }
 
 class _ChangeUserInfoState extends State<ChangeUserInfo> {
-  TextEditingController nameController = TextEditingController();
+  late TextEditingController nameController =
+      TextEditingController(text: widget.defaultText);
+
   @override
   void dispose() {
     nameController.dispose();
@@ -30,14 +34,14 @@ class _ChangeUserInfoState extends State<ChangeUserInfo> {
         maxLines: 1,
         inputFormatters: [LengthLimitingTextInputFormatter(15)],
         onSubmitted: ((value) {
-          final personProvider =
+          final infoProvider =
               Provider.of<InfoProvider>(context, listen: false);
           (widget.label == 'name')
-              ? personProvider.currentUser.name = value
-              : personProvider.currentUser.profession = value;
+              ? infoProvider.currentUser.name = value
+              : infoProvider.currentUser.profession = value;
 
-          personProvider.updateCurrentUser(personProvider.currentUser);
-          setState(() {});
+          infoProvider.updateCurrentUser(infoProvider.currentUser);
+          // setState(() {});
         }));
   }
 }

@@ -18,14 +18,18 @@ class MessageIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Person? chatUser;
     InfoProvider infoProvider = Provider.of<InfoProvider>(context);
     int chatId = infoProvider.chatId;
-    chatUser = infoProvider.allUsers.firstWhereOrNull(
+    Person? chatUser = infoProvider.currentChatUsers.firstWhereOrNull(
         (user) => user.id == message.idFrom && chatId == message.idTo);
 
     if (chatUser == null) {
-      Provider.of<InfoProvider>(context).getAllUsers();
+      Provider.of<InfoProvider>(context)
+          .setIdAndloadInfoForChat(chatId.toString())
+          .then((value) {
+        chatUser = infoProvider.currentChatUsers.firstWhereOrNull(
+            (user) => user.id == message.idFrom && chatId == message.idTo);
+      });
     }
     double h = MediaQuery.of(context).size.height / baseHeight;
     double fem = MediaQuery.of(context).size.width / baseWidth;
@@ -45,16 +49,18 @@ class MessageIn extends StatelessWidget {
                   margin: EdgeInsets.only(top: 4.5 * h),
                   width: 32 * fem,
                   height: 32 * fem,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0x191e1e1e)),
-                    borderRadius: BorderRadius.circular(200 * fem),
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: (chatUser != null || chatUser?.avatar != '')
-                            ? NetworkImage('${chatUser?.urlAvatar}')
-                                as ImageProvider
-                            : const AssetImage(
-                                'assets/components/images/unknown-user.png')),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20 * fem),
+                    child: Consumer<Map<String, Image>>(
+                      builder: (BuildContext context, value, Widget? child) {
+                        final avaImage = value[chatUser?.avatar] ??
+                            Image.asset(
+                              'assets/components/images/unknown-user.png',
+                              fit: BoxFit.cover,
+                            );
+                        return avaImage;
+                      },
+                    ),
                   ),
                 ),
                 Flexible(

@@ -8,12 +8,12 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await di.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(ChangeNotifierProvider(
     create: (context) => InfoProvider(),
+    // lazy: false,
     child: const MyApp(),
   ));
 }

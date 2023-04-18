@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:chat_test_work/data/repository.dart';
@@ -5,14 +7,13 @@ import 'package:chat_test_work/domain/entities/massage.dart';
 import 'package:chat_test_work/domain/entities/person.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path/path.dart' as path;
 
 class InfoProvider extends ChangeNotifier {
   Repository repository = Repository();
 
   Person get currentUser => _currentUser;
   List<Person> get currentChatUsers => _currentChatUsers;
-  List<Person> get allUsers => _allUsers;
-  Map<String, String> get imagesInBase64 => _imagesInBase64;
   int get chatId => _chatId;
 
   static Person _currentUser = Person(
@@ -24,86 +25,101 @@ class InfoProvider extends ChangeNotifier {
     lastSeen: '',
   );
   List<Person> _currentChatUsers = [];
-  List<Person> _allUsers = [];
-  final Map<String, String> _imagesInBase64 = {};
   late int _chatId;
 
-  Future<void> newCurrentUser() async {
-    int lastId = 0;
-    await getAllUsers();
+  Future<void> addNewCurrentUser() async {
+    int lastUserId = 0;
+    final allUsers = await getAllUsers();
     final usersListId = allUsers.map((user) => user.id).toList();
     if (usersListId.isNotEmpty) {
-      lastId = usersListId.reduce(max);
+      lastUserId = usersListId.reduce(max);
     }
-    currentUser.id = lastId + 1;
-    currentUser.lastSeen = DateTime.now().millisecondsSinceEpoch.toString();
-    saveCurrentUser(currentUser);
+    _currentUser.id = lastUserId + 1;
+    _currentUser.lastSeen = DateTime.now().millisecondsSinceEpoch.toString();
+    await repository.addCurrentUser(_currentUser);
+    notifyListeners();
   }
 
-  Future<Person> getCurrentUser() async {
+  Future<void> getCurrentUser() async {
     _currentUser = await repository.getCurrentUser();
     if (_currentUser.id == 0) {
-      newCurrentUser();
+      addNewCurrentUser();
     }
     notifyListeners();
-    return _currentUser;
   }
 
-  Future<void> getAllUsers() async {
-    _allUsers = await repository.getAllUsers().whenComplete(
-        () => saveAvatarsToCache().then((value) => allUsers.map((user) async {
-              _imagesInBase64[user.avatar] =
-                  await getImageFromCache(user.avatar);
-            })));
-
-    notifyListeners();
-  }
-
-  void saveCurrentUser(Person currentUser) {
-    _currentUser = currentUser;
-    repository.addCurrentUser(currentUser);
-  }
-
-  void updateCurrentUser(Person currentUser) {
-    _currentUser = currentUser;
-    repository.updateCurrentUser(_currentUser);
-  }
-
-  void getCurrentChatUsers() async {
+  Future<void> getCurrentChatUsers() async {
     var currentChatQuery = repository.getMessagesQuery(chatId);
     DataSnapshot dataSnapshot = await currentChatQuery.get();
+    List<int> currentChatUsersId = [];
 
     if (dataSnapshot.exists) {
       final currentChatMessages = (dataSnapshot.value as Map<dynamic, dynamic>)
           .values
           .map((json) => Message.fromJson(json))
-          .toList()
-          .where((message) => message.idTo == chatId)
           .toList();
-      final currentChatUsersId =
-          currentChatMessages.map((message) => message.idFrom).toList();
-      _currentChatUsers = allUsers
-          .where((user) => currentChatUsersId.contains(user.id))
-          .toSet()
-          .toList();
+      final setId =
+          currentChatMessages.map((message) => message.idFrom).toSet();
+      currentChatUsersId = setId.toList();
+      currentChatUsersId.removeWhere((element) => element == currentUser.id);
+      _currentChatUsers =
+          await repository.getCurrentChatUsers(currentChatUsersId);
     }
+    notifyListeners();
   }
 
-  void setCurrentChatId(int chatId) {
-    _chatId = chatId;
+  Future<List<Person>> getAllUsers() async {
+    return await repository.getAllUsers();
   }
 
-  int getCurrentChatId() {
-    return _chatId;
+  Future<void> changeCurrentUserPhoto(File? newPhoto) async {
+    if (newPhoto != null) {
+      _currentUser.urlAvatar = await repository.changeCurrentUserPhoto(
+              newPhoto, currentUser.avatar) ??
+          _currentUser.urlAvatar;
+      _currentUser.avatar = path.basename(newPhoto.path);
+      updateCurrentUser(_currentUser);
+    }
+    notifyListeners();
   }
 
-  Future<void> saveAvatarsToCache() async {
-    List<String> allUsersAvatar = allUsers.map((user) => user.avatar).toList();
-    await repository.saveAvatarImages(allUsersAvatar);
+  Future<void> updateCurrentUser(Person currentUser) async {
+    _currentUser = currentUser;
+    await repository.updateCurrentUser(_currentUser);
+    notifyListeners();
   }
 
-  Future<String> getImageFromCache(String linkAvatar) async {
-    final avaInBase64 = repository.getAvatarImage(linkAvatar);
-    return await avaInBase64;
+  Future<void> setIdAndloadInfoForChat(String chatId) async {
+    _chatId = int.parse(chatId);
+    await getCurrentChatUsers();
+    await saveChatAvatarsToCache();
+  }
+
+  Future<void> saveChatAvatarsToCache() async {
+    List<String> chatUsersAvatarNames = [];
+    for (var user in currentChatUsers) {
+      if (user.avatar.isNotEmpty) {
+        chatUsersAvatarNames.add(user.avatar);
+      }
+    }
+    await repository.saveAvatarImages(chatUsersAvatarNames);
+  }
+
+  Future<Map<String, Image>> getImageFromCache() async {
+    Map<String, Image> chatAvaImages = {};
+    final chatAvaNames = currentChatUsers.map((user) => user.avatar).toList();
+    for (var avaName in chatAvaNames) {
+      if (avaName.isNotEmpty) {
+        final avaInBase64 = await repository.getAvatarImage(avaName);
+        // final avaInUnit8 = const Base64Decoder().convert(avaInBase64);
+        final avaImage = Image.memory(
+            const Base64Decoder().convert(avaInBase64),
+            fit: BoxFit.cover);
+        if (avaName != currentUser.avatar) {
+          chatAvaImages.putIfAbsent(avaName, () => avaImage);
+        }
+      }
+    }
+    return chatAvaImages;
   }
 }

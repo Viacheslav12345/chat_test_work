@@ -1,25 +1,27 @@
-import 'package:chat_test_work/domain/models/info_provider.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import '../../common/const.dart';
 
-class HeaderIcons extends StatelessWidget {
-  const HeaderIcons({Key? key}) : super(key: key);
+class HeaderIcons extends StatefulWidget {
+  final List<Image> avaImages;
+  const HeaderIcons({
+    Key? key,
+    required this.avaImages,
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    InfoProvider infoProvider = Provider.of<InfoProvider>(context);
-    final chatUsers = infoProvider.currentChatUsers;
-    chatUsers.removeWhere((user) => user.id == infoProvider.currentUser.id);
+  State<HeaderIcons> createState() => _HeaderIconsState();
+}
 
+class _HeaderIconsState extends State<HeaderIcons> {
+  @override
+  Widget build(BuildContext context) {
     double pShift = -18;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     List<Widget> listOfIcons = [];
 
-    for (var i = 0; i < chatUsers.length; i++) {
+    for (var i = 0; i < widget.avaImages.length; i++) {
       pShift = pShift + 20 * fem;
-
       listOfIcons.add(Positioned(
         left: pShift,
         top: 0 * fem,
@@ -37,12 +39,7 @@ class HeaderIcons extends StatelessWidget {
               height: 24 * fem,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(150 * fem),
-                child: (chatUsers[i].avatar == '')
-                    ? Image.asset('assets/components/images/unknown-user.png')
-                    : Image.network(
-                        chatUsers[i].urlAvatar,
-                        fit: BoxFit.cover,
-                      ),
+                child: widget.avaImages[i],
               ),
             ),
           ),

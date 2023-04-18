@@ -77,7 +77,7 @@ class _TypingMessageState extends State<TypingMessage> {
     if (messageController.text.isNotEmpty) {
       final message = Message(
         idFrom: currentUser.id,
-        idTo: infoProvider.getCurrentChatId(),
+        idTo: infoProvider.chatId,
         timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
         content: messageController.text,
       );

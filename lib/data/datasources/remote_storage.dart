@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:chat_test_work/data/datasources/local_storage.dart';
 import 'package:chat_test_work/domain/entities/massage.dart';
@@ -8,6 +9,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as path;
 
 class RemoteDataSource {
   final LocalDataSource localDataSource = LocalDataSource();
@@ -17,11 +19,35 @@ class RemoteDataSource {
   final DatabaseReference _refMesseges =
       FirebaseDatabase.instance.ref().child('messages');
 
-  void addUser(Person person) async {
+  Future<void> addUser(Person person) async {
     _refUsers.push().set(person.toJson());
   }
 
-  void updateUser(Person user) async {
+  Future<String?> changeCurrentUserPhoto(File newPhoto,
+      [String? oldPhotoName]) async {
+    String? urlDownloadIcon;
+
+    try {
+      UploadTask? uploadTaskIcon;
+
+      //save newPhoto to FirebaseStorage
+      var ref = FirebaseStorage.instance
+          .ref()
+          .child('icons/${path.basename(newPhoto.path)}');
+      uploadTaskIcon = ref.putFile(File(newPhoto.path));
+
+      var snapshotIcon = await uploadTaskIcon;
+      urlDownloadIcon = await snapshotIcon.ref.getDownloadURL();
+      //delete old Image
+      if (oldPhotoName != '') {
+        FirebaseStorage.instance.ref().child('icons/$oldPhotoName').delete();
+      }
+      // ignore: empty_catches
+    } on FirebaseException {}
+    return urlDownloadIcon;
+  }
+
+  Future<void> updateUser(Person user) async {
     String? userKey;
     var databaseEvent = await _refUsers.once();
     var dataSnapshot = databaseEvent.snapshot;
@@ -45,18 +71,31 @@ class RemoteDataSource {
     }
   }
 
-  Future<List<Person>> getUsers() async {
+  Future<List<Person>> getUsers([List<int>? usersId]) async {
     var databaseEvent = await _refUsers.once();
 
     var dataSnapshot = databaseEvent.snapshot;
-    List<Person> usersList = [];
+    List<Person> chatUsersList = [];
+
     if (dataSnapshot.exists) {
-      usersList = (dataSnapshot.value as Map<dynamic, dynamic>)
+      final allUsersList = (dataSnapshot.value as Map<dynamic, dynamic>)
           .values
           .map((user) => Person.fromJson(user))
           .toList();
+
+      if (usersId != null) {
+        for (var id in usersId) {
+          for (var user in allUsersList) {
+            if (user.id == id) {
+              chatUsersList.add(user);
+            }
+          }
+        }
+      } else {
+        chatUsersList = allUsersList;
+      }
     }
-    return usersList;
+    return chatUsersList;
   }
 
   void sendMessage(Message message) {
@@ -68,26 +107,13 @@ class RemoteDataSource {
     return _refMesseges.child(chatId.toString());
   }
 
-  Future<void> getImagesEncodeToBase64AndSaveToLocal(
-      List<String> allUsersAvatar) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if (allUsersAvatar.isNotEmpty) {
-      for (var avatar in allUsersAvatar) {
-        if (avatar != '') {
-          var ref = FirebaseStorage.instance.ref().child("icons/$avatar");
-          Uint8List? data;
-          try {
-            data = await ref.getData(1024 * 1024);
-            // ignore: empty_catches
-          } on FirebaseException {}
-
-          if (data != null) {
-            String base64String = base64Encode(data);
-            prefs.setString(CACHED_ALL_USERS_AVATAR + avatar, base64String);
-          }
-        }
-      }
-    }
+  Future<Uint8List?> getAvaImageFromRemote(String avatar) async {
+    Uint8List? data;
+    var ref = FirebaseStorage.instance.ref().child("icons/$avatar");
+    try {
+      data = await ref.getData(1024 * 1024);
+      // ignore: empty_catches
+    } on FirebaseException {}
+    return data;
   }
 }
